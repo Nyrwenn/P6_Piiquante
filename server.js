@@ -1,5 +1,11 @@
 require('dotenv').config();
+const express = require('express');
 const mongoose = require('mongoose');
+const app = express();
+const path = require('path');
+const userRoutes = require('./routes/userRoute');
+const sauceRoutes = require('./routes/sauceRoute');
+
 
 mongoose.connect(process.env.MONGO,
     {
@@ -9,21 +15,28 @@ mongoose.connect(process.env.MONGO,
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-const express = require('express');
-
-const app = express()
-const port = 3000
-
-console.log(process.env.MONGO);
-
-
-
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+
+const port = 3000
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    next();
+});
+
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use('/api/sauces', sauceRoutes);
+app.use('/api/auth', userRoutes);
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
+
+
+
