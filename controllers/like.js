@@ -1,5 +1,5 @@
 const Sauce = require('../models/modelsSauce');
-const { getAllSauces } = require('./sauceController');
+
 
 exports.sauceLike = (req, res, next) => {
     const idSauce = req.params.id;
@@ -12,16 +12,18 @@ exports.sauceLike = (req, res, next) => {
     if (like === 1) {
         Sauce.findOne({ _id: idSauce })
             .then((sauce) => {
-                if (!sauce.usersLiked.includes(userId)) {
-                    sauce.usersLiked.push(userId);
+                const arrayOfLikes = sauce.usersLiked;
+                if (!arrayOfLikes.includes(userId) && !sauce.usersDisliked.includes(userId)) {
+                    arrayOfLikes.push(userId);
                     sauce.likes++;
 
                     sauce.save()
                         .then(() => res.status(201).json({ message: "Liked !" }))
                         .catch((error) => res.status(500).json({ error }));
                 } else {
-                    sauce.usersLiked.splice(sauce.usersLiked.indexOf(userId), 1);
+                    arrayOfLikes.splice(arrayOfLikes.indexOf(userId), 1);
                     sauce.likes--;
+                    sauce.usersLiked = arrayOfLikes;
 
                     sauce.save()
                         .then(() => res.status(201).json({ message: "Like delete !" }))
@@ -34,18 +36,18 @@ exports.sauceLike = (req, res, next) => {
     }
 
     if (like === -1) {
-        console.log(`it's a dislike`);
         Sauce.findOne({ _id: idSauce })
             .then((sauce) => {
-                if (!sauce.usersDisliked.includes(userId)) {
-                    sauce.usersDisliked.push(userId);
+                const arrayOfDislikes = sauce.usersDisliked;
+                if (!arrayOfDislikes.includes(userId) && !sauce.usersLiked.includes(userId)) {
+                    arrayOfDislikes.push(userId);
                     sauce.dislikes++;
 
                     sauce.save()
                         .then(() => res.status(201).json({ message: "Disliked!" }))
                         .catch((error) => res.status(500).json({ error }));
                 } else {
-                    sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(userId), 1);
+                    arrayOfDislikes.splice(arrayOfDislikes.indexOf(userId), 1);
                     sauce.dislikes--;
 
                     sauce.save()

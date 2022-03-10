@@ -1,13 +1,13 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+require('dotenv').config();
 
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const regexMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
             let isValid = regexMail.test(req.body.email);
-            //Pour simplifier if(isValid){} suffit
             if (isValid) {
 
                 const user = new User({
@@ -41,7 +41,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'DONT_SHOW_ME',
+                            process.env.PassJWT,
                             { expiresIn: '24h' }
                         )
                     });
