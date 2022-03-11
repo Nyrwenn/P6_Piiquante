@@ -1,6 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const rateLimit = require('express-rate-limit');
 const app = express();
 const path = require('path');
 const userRoutes = require('./routes/userRoute');
@@ -27,8 +30,29 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(helmet.crossOriginResourcePolicy({ policy: "same-site" }));
+app.disable('x-powered-by');
+app.use(
+    mongoSanitize({
+        allowDots: true,
+        replaceWith: '_',
+    }),
+);
+app.use(
+    mongoSanitize({
+        onSanitize: ({ req, key }) => {
+            console.warn(`This request[${key}] is sanitized`, req);
+        },
+    }),
+);
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+const apiRequestLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5
+})
+
+app.use(apiRequestLimiter),
+    app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
