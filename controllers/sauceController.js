@@ -1,5 +1,6 @@
 const Sauce = require('../models/modelsSauce');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
 exports.createSauce = (req, res, next) => {
 
@@ -32,37 +33,56 @@ exports.modifySauce = (req, res, next) => {
         } : { ...req.body };
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
-            if (sauce.imageUrl !== sauceObject) {
-                const filename = sauce.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {
-                    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-                        .then(() => res.status(200).json({ message: "Modified sauce ! " }))
-                        .catch((error) => {
-                            res.status(400).json({ error });
-                        });
-                })
+            const token = req.headers.authorization.split(' ')[1];
+            const decodedToken = jwt.verify(token, process.env.PassJWT);
+            const userId = decodedToken.userId;
+            if (userId === sauce.userId) {
+                if (sauce.imageUrl !== sauceObject) {
+                    const filename = sauce.imageUrl.split('/images/')[1];
+                    fs.unlink(`images/${filename}`, () => {
+                        Sauce.updateOne({ _id: req.params.id }, {
+                            ...sauceObject,
+                            likes: sauce.likes,
+                            dislikes: sauce.dislikes,
+                            usersLiked: sauce.usersLiked,
+                            usersDisliked: sauce.usersDisliked,
+                        })
+                            .then(() => res.status(200).json({ message: "Modified sauce ! " }))
+                            .catch((error) => {
+                                res.status(400).json({ error });
+                            });
+                    })
+                }
+            } else {
+                res.status(403).json({ message: "unauthorized" })
             }
-
         })
-        .catch((error) => res.status(500).json({ error }));
+        .catch((error) => res.status(400).json({ error }));
 };
 
 exports.deleteSauce = (req, res, next) => {
+
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
-            const filename = sauce.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
-                Sauce.deleteOne({ _id: req.params.id })
-                    .then(() => {
-                        res.status(200).json({ message: 'Sauce removed' });
-                    }).catch((error) => {
-                        res.status(400).json({ message: error })
-                    });
-            });
-
+            const token = req.headers.authorization.split(' ')[1];
+            const decodedToken = jwt.verify(token, process.env.PassJWT);
+            const userId = decodedToken.userId;
+            if (userId === sauce.userId) {
+                const filename = sauce.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    Sauce.deleteOne({ _id: req.params.id })
+                        .then(() => {
+                            res.status(200).json({ message: 'Sauce removed' });
+                        }).catch((error) => {
+                            res.status(400).json({ error })
+                        });
+                });
+            } else {
+                res.status(403).json({ message: "unauthorized" })
+            }
         })
         .catch(error =>
-            res.status(500).json({ essage: error }));
+            res.status(400).json({ error }));
 };
 
 

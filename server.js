@@ -47,8 +47,8 @@ app.use(
 );
 
 const apiRequestLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5
+    windowMs: 1 * 60 * 1000,
+    max: 200
 })
 
 app.use(apiRequestLimiter),
