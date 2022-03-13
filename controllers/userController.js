@@ -2,8 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 require('dotenv').config();
-
-
 const Joi = require('joi');
 
 const schema = Joi.object({
@@ -17,7 +15,6 @@ exports.signup = (req, res, next) => {
         password: req.body.password
     })
         .then((data) => {
-            console.log(data);
             bcrypt.hash(req.body.password, 10)
                 .then(hash => {
                     const user = new User({
