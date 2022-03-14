@@ -6,10 +6,6 @@ Into this file, you must have two const which are :
 MONGO=your mongoDB URI,
 PassJWT=create your JWT password.
 
-# Create a new folder for the images:
-Name it "images".
-When you will create sauces, you will need it to keep them on the server.
-
 # To run the server:
 `npm start`, it runs on the PORT 3000.
 
