@@ -31,7 +31,7 @@ exports.sauceLike = (req, res, next) => {
                         .catch((error) => res.status(900).json({ error }));
                 }
                 if (sauce.usersDisliked.includes(userId)) {
-                    return res.status(403).json({ message: "unauthorized " });
+                    return res.status(403).json({ message: "unauthorized request" });
                 }
             })
             .catch((error) => {
@@ -62,7 +62,7 @@ exports.sauceLike = (req, res, next) => {
                         .catch((error) => res.status(900).json({ error }));
                 }
                 if (sauce.usersLiked.includes(userId)) {
-                    return res.status(403).json({ message: "unauthorized" });
+                    return res.status(403).json({ message: "unauthorized request" });
                 }
             })
             .catch((error) => {

@@ -3,8 +3,9 @@
 Installation:
 First create a `.env` file.
 Into this file, you must have two const which are : 
-MONGO=your mongoDB URI,
-PassJWT=create your JWT password.
+MONGO=your mongoDB URI exemple: mongodb+srv://"your ID":<'password'>@piiquante.cjen8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+PassJWT=create your JWT password exemple: PassJWT=MY_SECRET_KEY
 
 # To run the server:
 `npm start`, it runs on the PORT 3000.

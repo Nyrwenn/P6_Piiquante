@@ -54,7 +54,7 @@ exports.modifySauce = (req, res, next) => {
                     })
                 }
             } else {
-                res.status(403).json({ message: "unauthorized" })
+                res.status(403).json({ message: "unauthorized request" })
             }
         })
         .catch((error) => res.status(400).json({ error }));
@@ -78,7 +78,7 @@ exports.deleteSauce = (req, res, next) => {
                         });
                 });
             } else {
-                res.status(403).json({ message: "unauthorized" })
+                res.status(403).json({ message: "unauthorized request" })
             }
         })
         .catch(error =>
