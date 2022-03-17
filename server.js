@@ -51,8 +51,9 @@ const apiRequestLimiter = rateLimit({
     max: 200
 })
 
-app.use(apiRequestLimiter),
-    app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(apiRequestLimiter);
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
